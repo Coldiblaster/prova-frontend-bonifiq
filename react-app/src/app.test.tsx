@@ -1,7 +1,12 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 import App from "./App";
+
 import * as userService from "@/services/user.service";
 import * as postService from "@/services/post.service";
+
+import { mockUser } from "@/__mocks__/user.mock";
+import { mockPosts } from "@/__mocks__/posts.mock";
 
 describe("App", () => {
   beforeEach(() => {
@@ -16,27 +21,31 @@ describe("App", () => {
 
     render(<App />);
 
-    // espera aparecer os blocos de skeleton
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", { data: { userId: 1 } })
+      );
+    });
+
     expect(await screen.findByTestId("skeleton-header")).toBeInTheDocument();
     expect(await screen.findAllByTestId("skeleton-post")).toHaveLength(4);
   });
 
   it("should render user and posts on success", async () => {
-    vi.spyOn(userService, "fetchUser").mockResolvedValue({
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-    });
-    vi.spyOn(postService, "fetchPosts").mockResolvedValue([
-      { id: 1, title: "Post 1", body: "Body 1" },
-      { id: 2, title: "Post 2", body: "Body 2" },
-    ]);
+    vi.spyOn(userService, "fetchUser").mockResolvedValue(mockUser);
+    vi.spyOn(postService, "fetchPosts").mockResolvedValue(mockPosts);
 
     render(<App />);
 
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", { data: { userId: 1 } })
+      );
+    });
+
     await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-      expect(screen.getByText("john@example.com")).toBeInTheDocument();
+      expect(screen.getByText(mockUser.name)).toBeInTheDocument();
+      expect(screen.getByText(mockUser.email)).toBeInTheDocument();
       expect(screen.getByText("Post 1")).toBeInTheDocument();
       expect(screen.getByText("Body 2")).toBeInTheDocument();
     });
@@ -50,8 +59,13 @@ describe("App", () => {
 
     render(<App />);
 
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", { data: { userId: 999 } })
+      );
+    });
+
     await waitFor(() => {
-      // a mensagem renderizada é a amigável do ErrorState
       expect(
         screen.getByText("Usuário não encontrado. Verifique o ID informado.")
       ).toBeInTheDocument();
