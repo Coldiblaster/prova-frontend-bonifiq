@@ -17,5 +17,18 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: "./vitest.setup.ts",
     css: true,
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      include: ["src/**"],
+      exclude: [
+        "src/services/**",
+        "src/lib/**",
+        "src/__mocks__/**",
+        "src/**/*.d.ts",
+        "src/main.tsx",
+        "src/vite-env.d.ts",
+      ],
+    },
   },
 });
