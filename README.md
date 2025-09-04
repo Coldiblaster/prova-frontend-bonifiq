@@ -1,142 +1,154 @@
 # 🧪 Prova Prática – Desenvolvedor Front-End
 
-## 🚀 Para começar
+## 📋 Sobre o desafio
 
-O primeiro passo é **criar uma cópia deste repositório na sua conta particular do GitHub**.  
-⚠️ **Atenção:** fazer uma cópia é diferente de realizar um **clone** ou um **fork**. Não utilize a opção *Fork*.
-
-### Como criar a cópia do repositório
-
-1. Acesse [https://github.com/new](https://github.com/new) (página de criação de repositório no GitHub).
-2. Defina o nome do repositório na sua conta como `prova-frontend-bonifiq`.
-3. Escolha se deseja deixar o repositório privado.
-4. Após criar o repositório, clone este repositório da prova na sua máquina:
-   ```bash
-   git clone <url-deste-repositorio>
-   ```
-5. Entre na pasta clonada:
-   ```bash
-   cd <nome-da-pasta>
-   ```
-6. Remova o vínculo com o repositório original:
-   ```bash
-   git remote remove origin
-   ```
-7. Adicione o repositório que você criou na sua conta como origem:
-   ```bash
-   git remote add origin <url-do-seu-repositorio>
-   ```
-8. Envie os arquivos para o seu repositório:
-   ```bash
-   git push -u origin main
-   ```
-   (ou `master`, dependendo do nome da sua branch principal)
-
-📌 **Importante:**  
-- O código deve estar na branch **main** ou **master** do seu repositório.  
-- **NÃO** faça *Fork* deste repositório.  
+Este projeto implementa um **widget em iFrame** carregado via script externo, que exibe informações de um usuário e seus posts consumidos da API pública [JSONPlaceholder](https://jsonplaceholder.typicode.com/).  
+O objetivo foi avaliar integração de front-end moderno (React + Vite + TypeScript), consumo de API, UX e testes.
 
 ---
 
-## 🧠 Objetivo
+## 💡 Decisões Técnicas
 
-Avaliar a capacidade do candidato em desenvolver e integrar um widget em uma página web, consumindo dados de uma API e utilizando tecnologias modernas como React.
+- Estrutura com **React + Vite + TypeScript** → inicialização rápida, tipagem forte e fácil integração via iFrame.
+- **PostMessage** entre `parent` e `iframe` → leitura segura do `window.loggedUserId` em qualquer domínio.
+- Consumo de API separado em **services** (`user.service.ts`, `post.service.ts`) com tipagem explícita.
+- Hooks (`useUserData`, `usePostMessage`) para centralizar lógica de dados e comunicação.
+- UI com **TailwindCSS + shadcn/ui** → design consistente, responsivo (máx. 320x600) e pronto para dark mode.
+- **Skeleton loaders** e mensagens amigáveis de erro → UX mais profissional.
+- **Testes unitários e de integração** com Vitest + Testing Library → cobertura alta em hooks e componentes críticos.
 
----
-
-## 📋 Instruções Gerais
-
-Você deve entregar:
-
-1. Um arquivo JavaScript que será incluído em qualquer site para carregar um widget contendo um iFrame.
-2. Um projeto React utilizando o framework Vite + TypeScript com a página a ser carregada no widget.
-3. As instruções de como executar e testar a solução.
-
----
-
-## ✅ Requisitos
-
-### 1. JavaScript para inserir o widget (arquivo externo)
-
-Desenvolva um script JS que:
-
-- Cria um botão flutuante fixo no canto inferior direito da tela (como um botão de chat).
-- Ao clicar no botão, um iFrame deve aparecer com o conteúdo da aplicação React.
-- O botão deve permitir abrir/fechar o widget.
-- O script deve ser facilmente incorporado via `<script src="..."></script>` em qualquer site.
-
-> 💡 O `window.loggedUserId` estará definido na página principal com o valor do ID do usuário logado (por exemplo: `window.loggedUserId = 2`).
+> ⚠️ **Nota de segurança**: para o desafio foi usado `postMessage` com `"*"`.  
+> Em produção, recomenda-se validar `event.origin` para aceitar mensagens apenas do domínio esperado.
 
 ---
 
-### 2. Aplicação React
+## 🛠️ Funcionalidades
 
-Você deverá criar uma aplicação que será exibida dentro do iFrame. Essa aplicação deve:
-
-- Ao carregar, ler o valor de `window.parent.loggedUserId` via `postMessage`.
-- Usar esse ID para fazer uma requisição `GET` para:
-  `https://jsonplaceholder.typicode.com/users/<ID>`
-- Exibir na tela os seguintes dados do usuário retornado:
-  - Nome
-  - E-mail
-- Usar o mesmo ID para fazer uma requisição `GET` para:
-  `https://jsonplaceholder.typicode.com/posts?userId=<ID>`
-- Exibir na tela os posts realizados pelo usuário contendo:
-  - Título (`title`)
-  - Conteúdo (`body`)
-
-> ⚠️ Importante: a aplicação React precisa funcionar mesmo rodando em um iFrame hospedado em outro domínio.
+- **Script externo (`widget.js`)** cria botão flutuante no canto inferior direito e carrega iFrame da aplicação.
+- Exibição de **dados do usuário** (nome e e-mail) consumidos da API.
+- Exibição de **posts do usuário** (título e conteúdo).
+- **Loading state** com skeletons durante chamadas à API.
+- **Tratamento de erro inteligente**:
+  - “Usuário não encontrado” (404) → mensagem customizada + botão retry.
+- **Botão de fechar no widget**, além do botão flutuante externo.
+- Responsividade garantida: uso confortável em desktop e mobile.
+- **Exemplo de integração** disponível em `/sites-exemplo`.
 
 ---
 
-### 3. Design & UX
+## ✅ Checklist do desafio
 
-- O widget pode ser simples, mas deve ser utilizável em desktop e mobile.
-- O widget deve cobrir no máximo **320px de largura** e **600px de altura**.
-- Sinta-se livre para utilizar bibliotecas com componentes prontos ou de estilização.
-- Deve haver um botão de **fechar** dentro do próprio widget.
-
----
-
-## 🧪 Critérios de Avaliação
-
-| Critério                          | Peso |
-|----------------------------------|------|
-| Funcionalidade completa          | 40%  |
-| Organização do código            | 20%  |
-| Uso adequado de React e JS       | 20%  |
-| UX e comportamento do widget     | 10%  |
-| Clareza nas instruções de uso    | 10%  |
+- [x] Script externo para carregar widget
+- [x] Botão flutuante (abre/fecha iFrame)
+- [x] Leitura de `window.loggedUserId` via postMessage
+- [x] Consumo da API JSONPlaceholder (usuário + posts)
+- [x] Skeleton loaders
+- [x] Tratamento de erro com mensagens amigáveis
+- [x] Testes unitários e de integração
+- [x] Responsividade (desktop + mobile)
 
 ---
 
-## 🚀 Extras (não obrigatórios, mas contam pontos)
+## ⚠️ Pré-requisitos
 
-- Adicionar tratamento de erro caso o ID do usuário seja inválido.
-- Fazer loading enquanto a API é chamada.
-- Testes unitários
+- [Git](https://git-scm.com)
+- [Node.js + pnpm](https://nodejs.org/en/download) (ou npm/yarn)
+
+### ▶️ Como rodar
+
+```bash
+# Clone o repositório
+$ git@github.com:Coldiblaster/prova-frontend-bonifiq.git
+# Entre na pasta do projeto
+cd prova-frontend-bonifiq
+
+# Instale as dependências
+pnpm install
+
+# Entre na aplicação React
+cd react-app
+
+# Inicie o servidor de desenvolvimento
+pnpm dev
+
+# A aplicação React estará disponível em:
+👉 http://localhost:5173
+
+# Em outro terminal, vá até a pasta de exemplos
+cd sites-exemplo
+
+# Abra o arquivo index.html no navegador
+# (pode ser só clicar duas vezes ou usar um live server)
+# O botão flutuante do widget aparecerá no canto inferior direito da página de exemplo.
+# Ao clicar, o iFrame carregará a aplicação React rodando em http://localhost:5173.
+```
 
 ---
 
-## 👾 Exemplos
+## 🌐 Exemplo de Uso em qualquer site
 
-![Aviato example](imgs/01.gif)
-![Classimax example](imgs/02.gif)
-![Shop example](imgs/03.gif)
+Para incluir o widget em uma página HTML, basta adicionar o **ID do usuário logado** e o script externo `widget.js`:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Exemplo Widget</title>
+  </head>
+  <body>
+    <h1>Minha Página</h1>
+
+    <script>
+      // ID do usuário logado definido na página principal
+      window.loggedUserId = 2;
+    </script>
+
+    <!-- Inclusão do widget -->
+    <script src="./widget.js"></script>
+  </body>
+</html>
+```
+
+⚠️ Observação: o widget.js precisa apontar para a versão compilada do projeto React (por exemplo, servida via http://localhost:5173 durante desenvolvimento ou via build em produção).
 
 ---
 
-## 📦 Entrega
+## 🧪 Testes
 
-Oba! Terminou tudinho? Agora faça o seguinte:
+O projeto possui **testes unitários e de integração** (Vitest + React Testing Library).
 
-1. Confirme que o código está na branch **main/master** do repositório que você criou.
-2. Configure o repositório no GitHub como **público** para que possamos acessar sua solução.
-3. Preencha o formulário abaixo:
-[https://forms.gle/Ytp6pi3gUZBmadcf7](https://forms.gle/Ytp6pi3gUZBmadcf7)
+```bash
 
-A gente te responde em breve, ok?
+# Rodar testes
+pnpm test
+
+# Rodar em modo watch
+pnpm test:watch
+
+# Gerar relatório de cobertura
+pnpm test:coverage
+
+# O relatório de cobertura estará disponível em
+/coverage/index.html
+
+```
 
 ---
 
-Boa sorte! 🍀
+## :open_file_folder: Languages and dependencies
+
+![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232a?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-3178c6?style=for-the-badge&labelColor=white&logo=Zod&logoColor=black)
+![shadcn/ui](https://img.shields.io/badge/shadcn--ui-black?style=for-the-badge)
+![Lucide](https://img.shields.io/badge/Lucide-18181b?style=for-the-badge&logo=lucide&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
+
+- **React 19**
+- **TypeScript** (tipagem estática)
+- **TailwindCSS 4**
+- **shadcn/ui** (componentes baseados em Radix)
+- **Lucide-react** (ícones SVG)
+- **pnpm** (gerenciador de pacotes)
