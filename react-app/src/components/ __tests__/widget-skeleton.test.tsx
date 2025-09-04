@@ -5,11 +5,9 @@ describe("WidgetSkeleton", () => {
   it("should render header skeleton with avatar and user info placeholders", () => {
     render(<WidgetSkeleton />);
 
-    // Check header skeleton exists
     const header = screen.getByTestId("skeleton-header");
     expect(header).toBeInTheDocument();
 
-    // Inside header, should have avatar + 2 lines
     const skeletons = within(header).getAllByTestId("skeleton");
     expect(skeletons.length).toBeGreaterThanOrEqual(3);
   });

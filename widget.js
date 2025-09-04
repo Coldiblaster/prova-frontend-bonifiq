@@ -2,7 +2,6 @@
   let iframe = null;
   let isOpen = false;
 
-  // Ícone chevron
   const chevronIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
          viewBox="0 0 24 24" stroke="currentColor"
@@ -12,16 +11,19 @@
     </svg>
   `;
 
-  // Cria botão
   const button = document.createElement("button");
+
   button.innerHTML = chevronIcon;
+
+  const isMobile = window.innerWidth < 640;
+
   Object.assign(button.style, {
     position: "fixed",
     bottom: "20px",
     right: "20px",
     zIndex: 9999,
-    width: "56px",
-    height: "56px",
+    width: isMobile ? "48px" : "56px",
+    height: isMobile ? "48px" : "56px",
     borderRadius: "50%",
     border: "none",
     background: "linear-gradient(135deg, #6366f1, #4f46e5)",
@@ -35,8 +37,8 @@
     animation: "popIn 0.4s ease-out",
   });
 
-  // Estilos extras
   const style = document.createElement("style");
+
   style.textContent = `
     @keyframes popIn {
       0% { transform: scale(0.6); opacity: 0; }
@@ -54,18 +56,16 @@
       transform: rotate(180deg);
     }
   `;
+
   document.head.appendChild(style);
 
-  // Clique do botão
   button.onclick = () => {
     if (isOpen) {
-      // fecha widget
       iframe?.remove();
       iframe = null;
       isOpen = false;
       button.classList.remove("open");
     } else {
-      // abre widget
       iframe = document.createElement("iframe");
 
       const isMobile = window.innerWidth < 640;
@@ -94,7 +94,7 @@
             "*"
           );
         }
-        // anima entrada
+
         requestAnimationFrame(() => {
           iframe.style.opacity = "1";
           iframe.style.transform = "translateY(0)";
@@ -106,7 +106,6 @@
     }
   };
 
-  // Fechar via React
   window.addEventListener("message", (event) => {
     if (event.data?.close) {
       iframe?.remove();
